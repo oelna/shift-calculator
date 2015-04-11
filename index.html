@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+	<title>Shift calculator</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+	<link rel="stylesheet" href="http://yui.yahooapis.com/3.13.0/build/cssreset/cssreset-min.css" />
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+
+		html {
+			font: 100%/1.5 Helvetica, Arial, sans-serif;
+			background: #eee;
+		}
+
+		#container {
+			width: 100%;
+			margin: 0 auto;
+			padding: 1em 1em 4em;
+			background: #fff;
+		}
+
+		#container .amount {
+			word-spacing: 0;
+			white-space: nowrap;
+			overflow: hidden;
+		}
+
+		#container input[type="number"] {
+			font-family: Consolas, 'Andale Mono', monospace;
+			display: inline-block;
+			width: 4em;
+			padding: 0.2em 0.3em;
+			margin: 0.2em 0.3em 0.2em 0;
+			float: left;
+		}
+
+		#container #result {
+			font-size: 2em;
+			font-family: 'Helvetica Neue', Helvetica;
+			font-weight: 300;
+			margin-bottom: 1rem;
+		}
+
+		#container .controls {
+			margin-bottom: 1em;
+		}
+
+		#container input[type="submit"],
+		#container input[type="button"] {
+			-webkit-appearance: none;
+			background: #aaa;
+			color: #fff;
+			padding: 0.3em 0.4em 0.2em;
+			border: 0;
+			border-radius: 0.2em;
+			cursor: pointer;
+		}
+
+		#container input[type="submit"] {
+			background-color: #00a6ff;
+		}
+
+		@media all and (min-width: 700px) {
+			#container {
+				width: 70vw;
+				margin-top: 5vh;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<form id="container">
+
+		<p class="controls"><input type="button" id="add" value="Add more hours" /> <input type="submit" value="Calculate" /></p>
+
+		<p id="result"></p>
+
+		<p class="amount">
+			<input type="number" placeholder="00" value="" class="hours" />
+			<input type="number" placeholder="00" value="" class="minutes" />
+		</p>
+		<p class="amount">
+			<input type="number" placeholder="00" value="" class="hours" />
+			<input type="number" placeholder="00" value="" class="minutes" />
+		</p>
+		<p class="amount">
+			<input type="number" placeholder="00" value="" class="hours" />
+			<input type="number" placeholder="00" value="" class="minutes" />
+		</p>
+
+	</form>
+
+	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script>
+		//dummy console
+		if(typeof console === 'undefined') {
+			console = {};
+			console.log = function() { return; }
+		}
+
+		function pad(n, width, z) {
+			z = z || '0';
+			n = n + '';
+			return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+		}
+
+		jQuery(document).ready(function($) {
+			console.log('init');
+			var amount_ele = '<p class="amount"><input type="number" placeholder="00" value="" class="hours" /><input type="number" placeholder="00" value="" class="minutes" /></p>';
+
+			var minutes = 0;
+
+			$('#add').on('click', function(e) {
+				e.preventDefault();
+				$('.amount').last().after(amount_ele);
+			});
+
+			$('.hours, .minutes').keyup(function() {
+				//console.log( "Handler for .keyup() called." );
+			});
+			$(document).on('keyup', '.hours, .minutes', function(e) {
+				if((e.keyCode || e.which) == 13 || (e.keyCode || e.which) == 10) {
+					console.log('Enter key');
+
+					$('.amount').last().after(amount_ele);
+
+					e.preventDefault();
+					return false;
+				}
+			});
+
+			$('input[type="submit"]').on('click', function(e) {
+				e.preventDefault();
+				var minutes = 0; //reset total minutes
+
+				$('.hours').each(function(i, e) {
+					if(!isNaN(parseInt(e.value)) && isFinite(e.value) && e.value != 0) {
+						minutes += (parseInt(e.value)*60);
+						//console.log('h:'+(parseInt(e.value)*60));
+					}
+				});
+				$('.minutes').each(function(i, e) {
+					if(!isNaN(parseInt(e.value)) && isFinite(e.value) && e.value != 0) {
+						minutes += parseInt(e.value);
+						//console.log('m:'+(parseInt(e.value)));
+					}
+				});
+				//console.log('end. total minutes: '+minutes);
+
+				var output_minutes = minutes % 60;
+				var output_hours = (minutes-output_minutes) / 60;
+
+				$('#result').html(output_hours+':'+pad(output_minutes, 2));
+				//alert(output_hours+':'+pad(output_minutes, 2));
+			});
+		});
+	</script>
+</body>
+</html>
